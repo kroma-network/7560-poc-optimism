@@ -12,7 +12,19 @@ import { stdJson } from "forge-std/StdJson.sol";
 contract PeripheryDeployConfig is Script {
     string internal _json;
 
-    address public faucetAdmin;
+    // Configuration for standard operations Drippie contract.
+    address public operationsDrippieOwner;
+    address public operationsSequencerDripV1Target;
+    uint256 public operationsSequencerDripV1Value;
+    uint256 public operationsSequencerDripV1Interval;
+    uint256 public operationsSequencerDripV1Threshold;
+    address public operationsGelatoDripV1Treasury;
+    address public operationsGelatoDripV1Recipient;
+    uint256 public operationsGelatoDripV1Value;
+    uint256 public operationsGelatoDripV1Interval;
+    uint256 public operationsGelatoDripV1Threshold;
+
+    // Configuration for the faucet Drippie contract.
     address public faucetDrippieOwner;
     uint256 public faucetDripV1Value;
     uint256 public faucetDripV1Interval;
@@ -28,20 +40,23 @@ contract PeripheryDeployConfig is Script {
     uint256 public faucetGelatoBalanceV1DripInterval;
     uint256 public faucetGelatoBalanceV1Value;
     uint256 public faucetGelatoThreshold;
-    address public faucetOnchainAuthModuleAdmin;
-    uint256 public faucetOnchainAuthModuleTtl;
-    uint256 public faucetOnchainAuthModuleAmount;
-    address public faucetOffchainAuthModuleAdmin;
-    uint256 public faucetOffchainAuthModuleTtl;
-    uint256 public faucetOffchainAuthModuleAmount;
-    bool public installOpChainFaucetsDrips;
-    bool public archivePreviousOpChainFaucetsDrips;
     uint256 public smallOpChainFaucetDripValue;
     uint256 public smallOpChainFaucetDripInterval;
     uint256 public largeOpChainFaucetDripValue;
     uint256 public largeOpChainFaucetDripInterval;
     uint256 public opChainAdminWalletDripValue;
     uint256 public opChainAdminWalletDripInterval;
+
+    // Configuration for the Faucet contract.
+    address public faucetAdmin;
+    address public faucetOnchainAuthModuleAdmin;
+    uint256 public faucetOnchainAuthModuleTtl;
+    uint256 public faucetOnchainAuthModuleAmount;
+    address public faucetOffchainAuthModuleAdmin;
+    uint256 public faucetOffchainAuthModuleTtl;
+    uint256 public faucetOffchainAuthModuleAmount;
+
+    // Configuration for the L1 bridges.
     address public opL1BridgeAddress;
     address public baseL1BridgeAddress;
     address public zoraL1BridgeAddress;
@@ -52,6 +67,12 @@ contract PeripheryDeployConfig is Script {
     address public liskL1BridgeAddress;
     address[6] public smallFaucetsL1BridgeAddresses;
     address[2] public largeFaucetsL1BridgeAddresses;
+
+    // Configuration booleans.
+    bool public installOpChainFaucetsDrips;
+    bool public archivePreviousOpChainFaucetsDrips;
+
+    // Configuration for the drip version.
     uint256 public dripVersion;
     uint256 public previousDripVersion;
 
@@ -64,7 +85,17 @@ contract PeripheryDeployConfig is Script {
             return;
         }
 
-        faucetAdmin = stdJson.readAddress(_json, "$.faucetAdmin");
+        // Configuration for the standard operations Drippie contract.
+        operationsDrippieOwner = stdJson.readAddress(_json, "$.operationsDrippieOwner");
+        operationsSequencerDripV1Target = stdJson.readAddress(_json, "$.operationsSequencerDripV1Target");
+        operationsSequencerDripV1Value = stdJson.readUint(_json, "$.operationsSequencerDripV1Value");
+        operationsSequencerDripV1Interval = stdJson.readUint(_json, "$.operationsSequencerDripV1Interval");
+        operationsSequencerDripV1Threshold = stdJson.readUint(_json, "$.operationsSequencerDripV1Threshold");
+        operationsGelatoDripV1Value = stdJson.readUint(_json, "$.operationsGelatoDripV1Value");
+        operationsGelatoDripV1Interval = stdJson.readUint(_json, "$.operationsGelatoDripV1Interval");
+        operationsGelatoDripV1Threshold = stdJson.readUint(_json, "$.operationsGelatoDripV1Threshold");
+
+        // Configuration for the faucet Drippie contract.
         faucetDrippieOwner = stdJson.readAddress(_json, "$.faucetDrippieOwner");
         faucetDripV1Value = stdJson.readUint(_json, "$.faucetDripV1Value");
         faucetDripV1Interval = stdJson.readUint(_json, "$.faucetDripV1Interval");
@@ -80,14 +111,23 @@ contract PeripheryDeployConfig is Script {
         faucetGelatoBalanceV1DripInterval = stdJson.readUint(_json, "$.faucetGelatoBalanceV1DripInterval");
         faucetGelatoBalanceV1Value = stdJson.readUint(_json, "$.faucetGelatoBalanceV1Value");
         faucetGelatoThreshold = stdJson.readUint(_json, "$.faucetGelatoThreshold");
+        smallOpChainFaucetDripValue = stdJson.readUint(_json, "$.smallOpChainFaucetDripValue");
+        smallOpChainFaucetDripInterval = stdJson.readUint(_json, "$.smallOpChainFaucetDripInterval");
+        largeOpChainFaucetDripValue = stdJson.readUint(_json, "$.largeOpChainFaucetDripValue");
+        largeOpChainFaucetDripInterval = stdJson.readUint(_json, "$.largeOpChainFaucetDripInterval");
+        opChainAdminWalletDripValue = stdJson.readUint(_json, "$.opChainAdminWalletDripValue");
+        opChainAdminWalletDripInterval = stdJson.readUint(_json, "$.opChainAdminWalletDripInterval");
+
+        // Configuration for the Faucet contract.
+        faucetAdmin = stdJson.readAddress(_json, "$.faucetAdmin");
         faucetOnchainAuthModuleAdmin = stdJson.readAddress(_json, "$.faucetOnchainAuthModuleAdmin");
         faucetOnchainAuthModuleTtl = stdJson.readUint(_json, "$.faucetOnchainAuthModuleTtl");
         faucetOnchainAuthModuleAmount = stdJson.readUint(_json, "$.faucetOnchainAuthModuleAmount");
         faucetOffchainAuthModuleAdmin = stdJson.readAddress(_json, "$.faucetOffchainAuthModuleAdmin");
         faucetOffchainAuthModuleTtl = stdJson.readUint(_json, "$.faucetOffchainAuthModuleTtl");
         faucetOffchainAuthModuleAmount = stdJson.readUint(_json, "$.faucetOffchainAuthModuleAmount");
-        installOpChainFaucetsDrips = stdJson.readBool(_json, "$.installOpChainFaucetsDrips");
-        archivePreviousOpChainFaucetsDrips = stdJson.readBool(_json, "$.archivePreviousOpChainFaucetsDrips");
+
+        // Configuration for the L1 bridges.
         opL1BridgeAddress = stdJson.readAddress(_json, "$.opL1BridgeAddress");
         baseL1BridgeAddress = stdJson.readAddress(_json, "$.baseL1BridgeAddress");
         zoraL1BridgeAddress = stdJson.readAddress(_json, "$.zoraL1BridgeAddress");
@@ -96,14 +136,6 @@ contract PeripheryDeployConfig is Script {
         liskL1BridgeAddress = stdJson.readAddress(_json, "$.liskL1BridgeAddress");
         modeL1BridgeAddress = stdJson.readAddress(_json, "$.modeL1BridgeAddress");
         lyraL1BridgeAddress = stdJson.readAddress(_json, "$.lyraL1BridgeAddress");
-        dripVersion = stdJson.readUint(_json, "$.dripVersion");
-        previousDripVersion = stdJson.readUint(_json, "$.previousDripVersion");
-        smallOpChainFaucetDripValue = stdJson.readUint(_json, "$.smallOpChainFaucetDripValue");
-        smallOpChainFaucetDripInterval = stdJson.readUint(_json, "$.smallOpChainFaucetDripInterval");
-        largeOpChainFaucetDripValue = stdJson.readUint(_json, "$.largeOpChainFaucetDripValue");
-        largeOpChainFaucetDripInterval = stdJson.readUint(_json, "$.largeOpChainFaucetDripInterval");
-        opChainAdminWalletDripValue = stdJson.readUint(_json, "$.opChainAdminWalletDripValue");
-        opChainAdminWalletDripInterval = stdJson.readUint(_json, "$.opChainAdminWalletDripInterval");
         largeFaucetsL1BridgeAddresses[0] = opL1BridgeAddress;
         largeFaucetsL1BridgeAddresses[1] = baseL1BridgeAddress;
         smallFaucetsL1BridgeAddresses[0] = zoraL1BridgeAddress;
@@ -112,6 +144,14 @@ contract PeripheryDeployConfig is Script {
         smallFaucetsL1BridgeAddresses[3] = modeL1BridgeAddress;
         smallFaucetsL1BridgeAddresses[4] = lyraL1BridgeAddress;
         smallFaucetsL1BridgeAddresses[5] = liskL1BridgeAddress;
+
+        // Configuration booleans.
+        installOpChainFaucetsDrips = stdJson.readBool(_json, "$.installOpChainFaucetsDrips");
+        archivePreviousOpChainFaucetsDrips = stdJson.readBool(_json, "$.archivePreviousOpChainFaucetsDrips");
+
+        // Configuration for the drip version.
+        dripVersion = stdJson.readUint(_json, "$.dripVersion");
+        previousDripVersion = stdJson.readUint(_json, "$.previousDripVersion");
     }
 
     function getSmallFaucetsL1BridgeAddressesCount() public view returns (uint256 count) {

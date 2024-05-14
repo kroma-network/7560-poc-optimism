@@ -125,6 +125,18 @@ contract DeployPeriphery is Script, Artifacts {
         require(drippie.owner() == cfg.faucetDrippieOwner());
     }
 
+    /// @notice Deploy the Drippie contract for standard operations.
+    function deployOperationsDrippie() public broadcast returns (address addr_) {
+        addr_ = _deployCreate2({
+            _name: "OperationsDrippie",
+            _creationCode: type(Drippie).creationCode,
+            _constructorParams: abi.encode(cfg.operationsDrippieOwner())
+        });
+
+        Drippie drippie = Drippie(payable(addr_));
+        require(drippie.owner() == cfg.operationsDrippieOwner());
+    }
+
     /// @notice Deploy On-Chain Authentication Module.
     function deployOnChainAuthModule() public broadcast returns (address addr_) {
         addr_ = _deployCreate2({
@@ -191,7 +203,16 @@ contract DeployPeriphery is Script, Artifacts {
         require(Faucet(payable(faucetProxy)).ADMIN() == Faucet(payable(faucet)).ADMIN());
     }
 
-    /// @notice Installs the drip configs in the faucet drippie contract.
+    /// @notice Installs the drip configs in the operations Drippie contract.
+    function installOperationsDrippieConfigs() public {
+        Drippie drippie = Drippie(mustGetAddress("OperationsDrippie"));
+        console.log("Installing operations drips at %s", address(drippie));
+        installOperationsSequencerDripV1();
+        installOperationsGelatoDripV1();
+        console.log("Operations drip configs successfully installed");
+    }
+
+    /// @notice Installs the drip configs in the faucet Drippie contract.
     function installFaucetDrippieConfigs() public {
         Drippie drippie = Drippie(mustGetAddress("FaucetDrippie"));
         console.log("Installing faucet drips at %s", address(drippie));
@@ -291,6 +312,31 @@ contract DeployPeriphery is Script, Artifacts {
         }
     }
 
+    /// @notice Installs the OperationsSequencerDripV1 drip on the operations drippie contract.
+    function installOperationsSequencerDripV1() public broadcast {
+        _installBalanceLowDrip({
+            _drippie: Drippie(mustGetAddress("OperationsDrippie")),
+            _name: "OperationsSequencerDripV1",
+            _target: cfg.operationsSequencerDripV1Target(),
+            _value: cfg.operationsSequencerDripV1Value(),
+            _interval: cfg.operationsSequencerDripV1Interval(),
+            _threshold: cfg.operationsSequencerDripV1Threshold()
+        });
+    }
+
+    /// @notice Installs the OperationsGelatoDripV1 drip on the operations drippie contract.
+    function installOperationsGelatoDripV1() public broadcast {
+        _installGelatoDrip({
+            _drippie: Drippie(mustGetAddress("OperationsDrippie")),
+            _name: "OperationsGelatoDripV1",
+            _treasury: cfg.operationsGelatoDripV1Treasury(),
+            _recipient: cfg.operationsGelatoDripV1Recipient(),
+            _value: cfg.operationsGelatoDripV1Value(),
+            _interval: cfg.operationsGelatoDripV1Interval(),
+            _threshold: cfg.operationsGelatoDripV1Threshold()
+        });
+    }
+
     /// @notice Installs the FaucetDripV1 drip on the faucet drippie contract.
     function installFaucetDripV1() public broadcast {
         _installBalanceLowDrip({
@@ -329,34 +375,14 @@ contract DeployPeriphery is Script, Artifacts {
 
     /// @notice Installs the GelatoBalanceV2 drip on the faucet drippie contract.
     function installFaucetGelatoBalanceV2() public broadcast {
-        Drippie.DripAction[] memory actions = new Drippie.DripAction[](1);
-        actions[0] = Drippie.DripAction({
-            target: payable(cfg.faucetGelatoTreasury()),
-            data: abi.encodeWithSignature(
-                "depositFunds(address,address,uint256)",
-                cfg.faucetGelatoRecipient(),
-                // Gelato represents ETH as 0xeeeee....eeeee
-                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,
-                cfg.faucetGelatoBalanceV1Value()
-            ),
-            value: cfg.faucetGelatoBalanceV1Value()
-        });
-        _installDrip({
+        _installGelatoDrip({
             _drippie: Drippie(mustGetAddress("FaucetDrippie")),
             _name: "GelatoBalanceV2",
-            _config: Drippie.DripConfig({
-                reentrant: false,
-                interval: cfg.faucetGelatoBalanceV1DripInterval(),
-                dripcheck: CheckGelatoLow(mustGetAddress("CheckGelatoLow")),
-                checkparams: abi.encode(
-                    CheckGelatoLow.Params({
-                        recipient: cfg.faucetGelatoRecipient(),
-                        threshold: cfg.faucetGelatoThreshold(),
-                        treasury: cfg.faucetGelatoTreasury()
-                    })
-                ),
-                actions: actions
-            })
+            _treasury: cfg.faucetGelatoTreasury(),
+            _recipient: cfg.faucetGelatoRecipient(),
+            _value: cfg.faucetGelatoBalanceV1Value(),
+            _interval: cfg.faucetGelatoBalanceV1DripInterval(),
+            _threshold: cfg.faucetGelatoThreshold()
         });
     }
 
@@ -375,6 +401,7 @@ contract DeployPeriphery is Script, Artifacts {
         console.log("OP chain faucet drip configs successfully installed");
     }
 
+    /// @notice Archives the previous small OP Chain faucet drips.
     function archivePreviousSmallOpChainFaucetsDrips() public {
         Drippie drippie = Drippie(mustGetAddress("FaucetDrippie"));
         uint256 arrayLength = cfg.getSmallFaucetsL1BridgeAddressesCount();
@@ -391,6 +418,7 @@ contract DeployPeriphery is Script, Artifacts {
         }
     }
 
+    /// @notice Archives the previous large OP Chain faucet drips.
     function archivePreviousLargeOpChainFaucetsDrips() public {
         Drippie drippie = Drippie(mustGetAddress("FaucetDrippie"));
         uint256 arrayLength = cfg.getLargeFaucetsL1BridgeAddressesCount();
@@ -533,7 +561,7 @@ contract DeployPeriphery is Script, Artifacts {
     function _installBalanceLowDrip(
         Drippie _drippie,
         string memory _name,
-        address payable _target,
+        address _target,
         uint256 _value,
         uint256 _interval,
         uint256 _threshold
@@ -541,7 +569,7 @@ contract DeployPeriphery is Script, Artifacts {
         internal
     {
         Drippie.DripAction[] memory actions = new Drippie.DripAction[](1);
-        actions[0] = Drippie.DripAction({ target: _target, data: "", value: _value });
+        actions[0] = Drippie.DripAction({ target: payable(_target), data: "", value: _value });
         _installDrip({
             _drippie: _drippie,
             _name: _name,
@@ -585,6 +613,56 @@ contract DeployPeriphery is Script, Artifacts {
                 interval: _interval,
                 dripcheck: CheckTrue(mustGetAddress("CheckTrue")),
                 checkparams: abi.encode(""),
+                actions: actions
+            })
+        });
+    }
+
+    /// @notice Installs a drip that sends ETH to the Gelato treasury if the balance is below a
+    ///         threshold. Balance gets deposited into the account of the recipient.
+    /// @param _drippie The drippie contract.
+    /// @param _name The name of the drip.
+    /// @param _treasury The address of the Gelato treasury.
+    /// @param _recipient The address of the recipient.
+    /// @param _value The amount of ETH to send.
+    /// @param _interval The interval that must elapse between drips.
+    function _installGelatoDrip(
+        Drippie _drippie,
+        string memory _name,
+        address _treasury,
+        address _recipient,
+        uint256 _value,
+        uint256 _interval,
+        uint256 _threshold
+    )
+        internal
+    {
+        Drippie.DripAction[] memory actions = new Drippie.DripAction[](1);
+        actions[0] = Drippie.DripAction({
+            target: payable(_treasury),
+            data: abi.encodeWithSignature(
+                "depositFunds(address,address,uint256)",
+                _recipient,
+                // Gelato represents ETH as 0xeeeee....eeeee
+                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,
+                _value
+            ),
+            value: _value
+        });
+        _installDrip({
+            _drippie: _drippie,
+            _name: _name,
+            _config: Drippie.DripConfig({
+                reentrant: false,
+                interval: _interval,
+                dripcheck: CheckGelatoLow(mustGetAddress("CheckGelatoLow")),
+                checkparams: abi.encode(
+                    CheckGelatoLow.Params({
+                        recipient: _recipient,
+                        threshold: _threshold,
+                        treasury: _treasury
+                    })
+                ),
                 actions: actions
             })
         });
