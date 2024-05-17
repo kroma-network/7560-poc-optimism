@@ -219,6 +219,8 @@ contract Setup {
         labelPreinstall(Preinstalls.SenderCreator);
         labelPreinstall(Preinstalls.EntryPoint);
         labelPreinstall(Preinstalls.BeaconBlockRoots);
+        labelPreinstall(Preinstalls.BasicPaymaster);
+        labelPreinstall(Preinstalls.BasicAccount);
 
         console.log("Setup: completed L2 genesis");
     }

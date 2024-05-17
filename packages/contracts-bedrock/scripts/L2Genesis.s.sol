@@ -486,6 +486,8 @@ contract L2Genesis is Deployer {
         _setPreinstallCode(Preinstalls.SenderCreator);
         _setPreinstallCode(Preinstalls.EntryPoint); // ERC 4337
         _setPreinstallCode(Preinstalls.BeaconBlockRoots);
+        _setPreinstallCode(Preinstalls.BasicPaymaster); // RIP 7560
+        _setPreinstallCode(Preinstalls.BasicAccount); // RIP 7560
         // 4788 sender nonce must be incremented, since it's part of later upgrade-transactions.
         // For the upgrade-tx to not create a contract that conflicts with an already-existing copy,
         // the nonce must be bumped.
