@@ -237,14 +237,14 @@ def devnet_deploy(paths):
     addresses = read_json(paths.addresses_json_path)
 
     # Start the L2.
-    log.info('Bringing up L2.')
-    run_command(['docker', 'compose', 'up', '-d', 'l2'], cwd=paths.ops_bedrock_dir, env={
-        'PWD': paths.ops_bedrock_dir
-    })
+    # log.info('Bringing up L2.')
+    # run_command(['docker', 'compose', 'up', '-d', 'l2'], cwd=paths.ops_bedrock_dir, env={
+    #     'PWD': paths.ops_bedrock_dir
+    # })
 
     # Wait for the L2 to be available.
-    wait_up(9545)
-    wait_for_rpc_server('127.0.0.1:9545')
+    wait_up(38545)
+    wait_for_rpc_server('127.0.0.1:38545')
 
     # Print out the addresses being used for easier debugging.
     l2_output_oracle = addresses['L2OutputOracleProxy']
