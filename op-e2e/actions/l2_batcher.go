@@ -276,7 +276,7 @@ func (s *L2Batcher) ActL2BatchSubmit(t Testing, txOpts ...func(tx *types.Dynamic
 			opt(rawTx)
 		}
 
-		gas, err := core.IntrinsicGas(rawTx.Data, nil, false, true, true, false)
+		gas, err := core.IntrinsicGas(rawTx.Data, nil, false, false, true, true, false)
 		require.NoError(t, err, "need to compute intrinsic gas")
 		rawTx.Gas = gas
 		txData = rawTx
@@ -467,7 +467,7 @@ func (s *L2Batcher) ActL2BatchSubmitGarbage(t Testing, kind GarbageKind) {
 		GasFeeCap: gasFeeCap,
 		Data:      outputFrame,
 	}
-	gas, err := core.IntrinsicGas(rawTx.Data, nil, false, true, true, false)
+	gas, err := core.IntrinsicGas(rawTx.Data, nil, false, false, true, true, false)
 	require.NoError(t, err, "need to compute intrinsic gas")
 	rawTx.Gas = gas
 
