@@ -5,6 +5,7 @@ RUN apk add --no-cache make gcc musl-dev linux-headers git jq bash
 # We copy the go.mod/sum first, so the `go mod download` does not have to re-run if dependencies do not change.
 COPY ./go.mod /app/go.mod
 COPY ./go.sum /app/go.sum
+COPY ./7560-poc-geth/ /app/7560-poc-geth
 
 WORKDIR /app
 
@@ -48,45 +49,45 @@ ARG TARGETOS TARGETARCH
 # The "id" defaults to the value of "target", the cache will thus be reused during this build.
 # "sharing" defaults to "shared", the cache will thus be available to other concurrent docker builds.
 
-RUN --mount=type=cache,target=/root/.cache/go-build cd cannon && make cannon  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$CANNON_VERSION"
-# note: we only build the host, that's all the user needs. No Go MIPS cross-build in docker
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-program && make op-program-host  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$OP_PROGRAM_VERSION"
-
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-heartbeat && make op-heartbeat  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$OP_HEARTBEAT_VERSION"
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-wheel && make op-wheel  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_WHEEL_VERSION"
+#RUN --mount=type=cache,target=/root/.cache/go-build cd cannon && make cannon  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$CANNON_VERSION"
+## note: we only build the host, that's all the user needs. No Go MIPS cross-build in docker
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-program && make op-program-host  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$OP_PROGRAM_VERSION"
+#
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-heartbeat && make op-heartbeat  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$OP_HEARTBEAT_VERSION"
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-wheel && make op-wheel  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_WHEEL_VERSION"
 
 RUN --mount=type=cache,target=/root/.cache/go-build cd op-node && make op-node  \
     GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$OP_NODE_VERSION"
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-challenger && make op-challenger  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_CHALLENGER_VERSION"
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-dispute-mon && make op-dispute-mon  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_DISPUTE_MON_VERSION"
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-challenger && make op-challenger  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_CHALLENGER_VERSION"
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-dispute-mon && make op-dispute-mon  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_DISPUTE_MON_VERSION"
 RUN --mount=type=cache,target=/root/.cache/go-build cd op-batcher && make op-batcher  \
     GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_BATCHER_VERSION"
 RUN --mount=type=cache,target=/root/.cache/go-build cd op-proposer && make op-proposer  \
     GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_PROPOSER_VERSION"
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-conductor && make op-conductor  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_CONDUCTOR_VERSION"
-RUN --mount=type=cache,target=/root/.cache/go-build cd op-plasma && make da-server  \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-conductor && make op-conductor  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_CONDUCTOR_VERSION"
+#RUN --mount=type=cache,target=/root/.cache/go-build cd op-plasma && make da-server  \
+#    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE
 
 
 FROM alpine:3.18
 
-COPY --from=builder /app/cannon/bin/cannon /usr/local/bin/
-COPY --from=builder /app/op-program/bin/op-program /usr/local/bin/
-
-COPY --from=builder /app/op-heartbeat/bin/op-heartbeat /usr/local/bin/
-COPY --from=builder /app/op-wheel/bin/op-wheel /usr/local/bin/
+#COPY --from=builder /app/cannon/bin/cannon /usr/local/bin/
+#COPY --from=builder /app/op-program/bin/op-program /usr/local/bin/
+#
+#COPY --from=builder /app/op-heartbeat/bin/op-heartbeat /usr/local/bin/
+#COPY --from=builder /app/op-wheel/bin/op-wheel /usr/local/bin/
 
 COPY --from=builder /app/op-node/bin/op-node /usr/local/bin/
-COPY --from=builder /app/op-challenger/bin/op-challenger /usr/local/bin/
-COPY --from=builder /app/op-dispute-mon/bin/op-dispute-mon /usr/local/bin/
+#COPY --from=builder /app/op-challenger/bin/op-challenger /usr/local/bin/
+#COPY --from=builder /app/op-dispute-mon/bin/op-dispute-mon /usr/local/bin/
 COPY --from=builder /app/op-batcher/bin/op-batcher /usr/local/bin/
 COPY --from=builder /app/op-proposer/bin/op-proposer /usr/local/bin/
-COPY --from=builder /app/op-conductor/bin/op-conductor /usr/local/bin/
-COPY --from=builder /app/op-plasma/bin/da-server /usr/local/bin/
+#COPY --from=builder /app/op-conductor/bin/op-conductor /usr/local/bin/
+#COPY --from=builder /app/op-plasma/bin/da-server /usr/local/bin/
