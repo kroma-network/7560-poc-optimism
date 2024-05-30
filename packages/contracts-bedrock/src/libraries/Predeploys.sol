@@ -89,6 +89,9 @@ library Predeploys {
     /// @notice Address of the L2ToL2CrossDomainMessenger predeploy.
     address internal constant L2_TO_L2_CROSS_DOMAIN_MESSENGER = 0x4200000000000000000000000000000000000023;
 
+    /// @notice Address of the NonceManager predeploy.
+    address internal constant NONCE_MANAGER = 0x4200000000000000000000000000000000000024;
+
     /// @notice Returns the name of the predeploy at the given address.
     function getName(address _addr) internal pure returns (string memory out_) {
         require(isPredeployNamespace(_addr), "Predeploys: address must be a predeploy");
@@ -115,12 +118,13 @@ library Predeploys {
         if (_addr == LEGACY_ERC20_ETH) return "LegacyERC20ETH";
         if (_addr == CROSS_L2_INBOX) return "CrossL2Inbox";
         if (_addr == L2_TO_L2_CROSS_DOMAIN_MESSENGER) return "L2ToL2CrossDomainMessenger";
+        if (_addr == NONCE_MANAGER) return "NonceManager";
         revert("Predeploys: unnamed predeploy");
     }
 
     /// @notice Returns true if the predeploy is not proxied.
     function notProxied(address _addr) internal pure returns (bool) {
-        return _addr == GOVERNANCE_TOKEN || _addr == WETH9;
+        return _addr == GOVERNANCE_TOKEN || _addr == WETH9 || _addr == NONCE_MANAGER;
     }
 
     /// @notice Returns true if the address is a defined predeploy that is embedded into new OP-Stack chains.
@@ -130,7 +134,8 @@ library Predeploys {
             || _addr == SEQUENCER_FEE_WALLET || _addr == OPTIMISM_MINTABLE_ERC20_FACTORY || _addr == L1_BLOCK_NUMBER
             || _addr == L2_ERC721_BRIDGE || _addr == L1_BLOCK_ATTRIBUTES || _addr == L2_TO_L1_MESSAGE_PASSER
             || _addr == OPTIMISM_MINTABLE_ERC721_FACTORY || _addr == PROXY_ADMIN || _addr == BASE_FEE_VAULT
-            || _addr == L1_FEE_VAULT || _addr == SCHEMA_REGISTRY || _addr == EAS || _addr == GOVERNANCE_TOKEN;
+            || _addr == L1_FEE_VAULT || _addr == SCHEMA_REGISTRY || _addr == EAS || _addr == GOVERNANCE_TOKEN
+            || _addr == NONCE_MANAGER;
     }
 
     function isPredeployNamespace(address _addr) internal pure returns (bool) {

@@ -149,6 +149,8 @@ abstract contract Artifacts {
             return payable(Predeploys.SCHEMA_REGISTRY);
         } else if (digest == keccak256(bytes("EAS"))) {
             return payable(Predeploys.EAS);
+        } else if (digest == keccak256(bytes("NonceManager"))) {
+            return payable(Predeploys.NONCE_MANAGER);
         }
         return payable(address(0));
     }

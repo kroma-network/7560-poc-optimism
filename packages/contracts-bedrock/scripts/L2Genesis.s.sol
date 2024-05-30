@@ -20,6 +20,7 @@ import { OptimismMintableERC20Factory } from "src/universal/OptimismMintableERC2
 import { OptimismMintableERC721Factory } from "src/universal/OptimismMintableERC721Factory.sol";
 import { BaseFeeVault } from "src/L2/BaseFeeVault.sol";
 import { L1FeeVault } from "src/L2/L1FeeVault.sol";
+import { NonceManager } from "src/L2/NonceManager.sol";
 import { GovernanceToken } from "src/governance/GovernanceToken.sol";
 import { L1CrossDomainMessenger } from "src/L1/L1CrossDomainMessenger.sol";
 import { L1StandardBridge } from "src/L1/L1StandardBridge.sol";
@@ -95,7 +96,7 @@ contract L2Genesis is Deployer {
         0x40Fc963A729c542424cD800349a7E4Ecc4896624, // 28
         0x9DCCe783B6464611f38631e6C851bf441907c710, // 29
         0x7560000000000000000000000000000000000000, // RIP-7560 BasicPaymaster
-        0x7560000000000000000000000000000000000001  // RIP-7560 BasicAccount
+        0x7560000000000000000000000000000000000001 // RIP-7560 BasicAccount
     ];
 
     /// @notice The address of the deployer account.
@@ -237,6 +238,7 @@ contract L2Genesis is Deployer {
         // 1B,1C,1D,1E,1F: not used.
         setSchemaRegistry(); // 20
         setEAS(); // 21
+        setNonceManager(); // 24
         setGovernanceToken(); // 42: OP (not behind a proxy)
     }
 
@@ -468,6 +470,12 @@ contract L2Genesis is Deployer {
         /// Reset so its not included state dump
         vm.etch(address(eas), "");
         vm.resetNonce(address(eas));
+    }
+
+    /// @notice This predeploy is following the safety invariant #1.
+    function setNonceManager() public {
+        console.log("Setting %s implementation at: %s", "NonceManager", Predeploys.NONCE_MANAGER);
+        vm.etch(Predeploys.NONCE_MANAGER, vm.getDeployedCode("NonceManager.sol:NonceManager"));
     }
 
     /// @notice Sets all the preinstalls.
