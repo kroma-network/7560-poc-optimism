@@ -11,6 +11,7 @@ import { L2ERC721Bridge } from "src/L2/L2ERC721Bridge.sol";
 import { BaseFeeVault } from "src/L2/BaseFeeVault.sol";
 import { SequencerFeeVault } from "src/L2/SequencerFeeVault.sol";
 import { L1FeeVault } from "src/L2/L1FeeVault.sol";
+import { NonceManager } from "src/L2/NonceManager.sol";
 import { GasPriceOracle } from "src/L2/GasPriceOracle.sol";
 import { L1Block } from "src/L2/L1Block.sol";
 import { LegacyMessagePasser } from "src/legacy/LegacyMessagePasser.sol";
@@ -88,6 +89,7 @@ contract Setup {
     L1FeeVault l1FeeVault = L1FeeVault(payable(Predeploys.L1_FEE_VAULT));
     GasPriceOracle gasPriceOracle = GasPriceOracle(Predeploys.GAS_PRICE_ORACLE);
     L1Block l1Block = L1Block(Predeploys.L1_BLOCK_ATTRIBUTES);
+    NonceManager nonceManager = NonceManager(Predeploys.NONCE_MANAGER);
     LegacyMessagePasser legacyMessagePasser = LegacyMessagePasser(Predeploys.LEGACY_MESSAGE_PASSER);
     GovernanceToken governanceToken = GovernanceToken(Predeploys.GOVERNANCE_TOKEN);
 
@@ -205,6 +207,7 @@ contract Setup {
         labelPredeploy(Predeploys.GOVERNANCE_TOKEN);
         labelPredeploy(Predeploys.EAS);
         labelPredeploy(Predeploys.SCHEMA_REGISTRY);
+        labelPredeploy(Predeploys.NONCE_MANAGER);
 
         // L2 Preinstalls
         labelPreinstall(Preinstalls.MultiCall3);

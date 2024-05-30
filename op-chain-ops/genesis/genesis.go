@@ -73,6 +73,9 @@ func NewL2Genesis(config *DeployConfig, block *types.Block) (*core.Genesis, erro
 			EIP1559Elasticity:        eip1559Elasticity,
 			EIP1559DenominatorCanyon: eip1559DenomCanyon,
 		},
+		EntryPointAddress:     common.HexToAddress("0x0000000000000000000000000000000000007560"),
+		NonceManagerAddress:   common.HexToAddress("0x4200000000000000000000000000000000000024"),
+		DeployerCallerAddress: common.HexToAddress("0x00000000000000000000000000000000ffff7560"),
 	}
 
 	gasLimit := config.L2GenesisBlockGasLimit

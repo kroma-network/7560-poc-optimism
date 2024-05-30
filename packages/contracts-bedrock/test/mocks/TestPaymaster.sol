@@ -6,7 +6,7 @@ contract TestPaymaster {
     bytes4 private constant MAGIC_VALUE_PAYMASTER = 0xe0e6183a;
 
     // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
+    receive() external payable { }
 
     function postPaymasterTransaction(bool success, uint256 actualGasCost, bytes calldata context) external pure {
         (success, actualGasCost, context);
@@ -16,7 +16,11 @@ contract TestPaymaster {
         uint256 version,
         bytes32 txHash,
         bytes calldata transaction
-    ) external pure returns (bytes memory context, bytes32 validationData) {
+    )
+        external
+        pure
+        returns (bytes memory context, bytes32 validationData)
+    {
         (version, txHash, transaction);
         context = new bytes(0);
         uint64 max = type(uint64).max - 1;
