@@ -15,11 +15,11 @@ contract TestAccount {
     )
         external
         pure
-        returns (bytes32 validationData)
+        returns (uint256 validationData)
     {
         (version, txHash, transaction);
-        uint64 max = type(uint64).max - 1;
-        validationData = bytes32(abi.encodePacked(MAGIC_VALUE_SENDER, max, uint64(0)));
+        uint64 max = type(uint64).max;
+        validationData = uint256(uint32(MAGIC_VALUE_SENDER)) << 224 | uint256(uint64(0)) << 160 | uint256(max) << 96;
     }
 
     function execute(address dest, uint256 value, bytes calldata func) external {

@@ -19,11 +19,11 @@ contract TestPaymaster {
     )
         external
         pure
-        returns (bytes memory context, bytes32 validationData)
+        returns (uint256 validationData, bytes memory context)
     {
         (version, txHash, transaction);
-        context = new bytes(0);
-        uint64 max = type(uint64).max - 1;
-        validationData = bytes32(abi.encodePacked(MAGIC_VALUE_PAYMASTER, max, uint64(0)));
+        context = new bytes(1);
+        uint64 max = type(uint64).max;
+        validationData = uint256(uint32(MAGIC_VALUE_PAYMASTER)) << 224 | uint256(uint64(0)) << 160 | uint256(max) << 96;
     }
 }
