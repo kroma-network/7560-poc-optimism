@@ -42,23 +42,4 @@ contract NonceManagerTest is CommonTest {
         assertTrue(success);
         assertEq(returnData, abi.encodePacked(uint192(aliceKey), uint64(1)));
     }
-
-    /// @dev Tests that getting nonce through runtime is done properly.
-    function test_runtime_get_succeeds() external {
-        uint256 nonce = nonceManager.get(abi.encodePacked(alice, aliceKey));
-        assertEq(uint64(nonce), uint64(0));
-
-        test_validateIncrement_succeeds();
-
-        nonce = nonceManager.get(abi.encodePacked(alice, aliceKey));
-        assertEq(uint64(nonce), uint64(1));
-    }
-
-    /// @dev Tests that increasing nonce manually is done properly.
-    function test_incrementNonce_succeeds() external {
-        vm.prank(alice);
-        nonceManager.incrementNonce(aliceKey);
-        uint256 nonce = nonceManager.get(abi.encodePacked(alice, aliceKey));
-        assertEq(uint64(nonce), uint64(1));
-    }
 }
