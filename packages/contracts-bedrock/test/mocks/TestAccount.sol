@@ -18,8 +18,10 @@ contract TestAccount {
         returns (uint256 validationData)
     {
         (version, txHash, transaction);
-        uint64 max = type(uint64).max;
-        validationData = uint256(uint32(MAGIC_VALUE_SENDER)) << 224 | uint256(uint64(0)) << 160 | uint256(max) << 96;
+        uint64 validUntil = type(uint64).max;
+        uint64 validAfter = 0;
+        validationData =
+            uint256(uint32(MAGIC_VALUE_SENDER)) << 224 | uint256(validUntil) << 160 | uint256(validAfter) << 96;
     }
 
     function execute(address dest, uint256 value, bytes calldata func) external {
