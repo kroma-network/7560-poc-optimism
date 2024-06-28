@@ -15,13 +15,16 @@ contract TestAccount {
     )
         external
         pure
-        returns (uint256 validationData)
+        returns (bytes32 validationData)
     {
         (version, txHash, transaction);
-        uint64 validUntil = type(uint64).max;
+        // limited to 48 bits
+        uint64 validUntil = type(uint64).max & 0xFFFFFFFFFFFF;
         uint64 validAfter = 0;
         validationData =
-            uint256(uint32(MAGIC_VALUE_SENDER)) << 224 | uint256(validUntil) << 160 | uint256(validAfter) << 96;
+            (bytes32(MAGIC_VALUE_SENDER) |
+            bytes32(uint256(validUntil) << (6 * 8)) |
+            bytes32(uint256(validAfter)));
     }
 
     function execute(address dest, uint256 value, bytes calldata func) external {
