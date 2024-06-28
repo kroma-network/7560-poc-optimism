@@ -19,13 +19,16 @@ contract TestPaymaster {
     )
         external
         pure
-        returns (bytes memory context, uint256 validationData)
+        returns (bytes32 validationData, bytes memory context)
     {
         (version, txHash, transaction);
         context = new bytes(1);
-        uint64 validUntil = type(uint64).max;
+        // limited to 48 bits
+        uint64 validUntil = type(uint64).max & 0xFFFFFFFFFFFF;
         uint64 validAfter = 0;
         validationData =
-            uint256(uint32(MAGIC_VALUE_PAYMASTER)) << 224 | uint256(validUntil) << 160 | uint256(validAfter) << 96;
+            (bytes32(MAGIC_VALUE_PAYMASTER) |
+            bytes32(uint256(validUntil) << (6 * 8)) |
+            bytes32(uint256(validAfter)));
     }
 }
