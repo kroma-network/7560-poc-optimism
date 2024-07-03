@@ -351,3 +351,7 @@ func (db *MemoryStateDB) SetTransientState(addr common.Address, key, value commo
 func (db *MemoryStateDB) Prepare(rules params.Rules, sender, coinbase common.Address, dest *common.Address, precompiles []common.Address, txAccesses types.AccessList) {
 	// no-op, no transient state to prepare, nor any access-list to set/prepare
 }
+
+func (db *MemoryStateDB) PrepareWithOption(rules params.Rules, sender, coinbase common.Address, dest *common.Address, precompiles []common.Address, txAccesses types.AccessList, reuseAccessList bool) {
+	// no-op, no transient state to prepare, nor any access-list to set/prepare
+}
