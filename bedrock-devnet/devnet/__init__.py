@@ -167,7 +167,7 @@ def devnet_l2_allocs(paths):
     # For the previous forks, and the latest fork (default, thus empty prefix),
     # move the forge-dumps into place as .devnet allocs.
     for suffix in ["-delta", ""]:
-        input_path = pjoin(paths.contracts_bedrock_dir, f"state-dump-901{suffix}.json")
+        input_path = pjoin(paths.contracts_bedrock_dir, f"state-dump-11171168{suffix}.json")
         forge_dump = read_json(input_path)
         output_path = pjoin(paths.devnet_dir, f'allocs-l2{suffix}.json')
         write_json(output_path, { "accounts": forge_dump })
@@ -384,7 +384,7 @@ def run_command(args, check=True, shell=False, cwd=None, env=None, timeout=None)
     )
 
 
-def wait_up(port, retries=10, wait_secs=1):
+def wait_up(port, retries=1000, wait_secs=1):
     for i in range(0, retries):
         log.info(f'Trying 127.0.0.1:{port}')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
