@@ -28,7 +28,7 @@ log = logging.getLogger()
 
 # Global environment variables
 DEVNET_NO_BUILD = os.getenv('DEVNET_NO_BUILD') == "true"
-DEVNET_L2OO = os.getenv('DEVNET_L2OO') == "true"
+DEVNET_L2OO = True #os.getenv('DEVNET_L2OO') == "true"
 DEVNET_PLASMA = os.getenv('DEVNET_PLASMA') == "true"
 GENERIC_PLASMA = os.getenv('GENERIC_PLASMA') == "true"
 
@@ -287,7 +287,7 @@ def devnet_deploy(paths):
 
     # Bring up the rest of the services.
     log.info('Bringing up `op-node`, `op-proposer` and `op-batcher`.')
-    run_command(['docker', 'compose', 'up', '-d', 'op-node', 'op-proposer', 'op-batcher', 'artifact-server'], cwd=paths.ops_bedrock_dir, env=docker_env)
+    run_command(['docker', 'compose', 'up', '-d', 'op-node', 'op-proposer', 'op-batcher'], cwd=paths.ops_bedrock_dir, env=docker_env)
 
     # Optionally bring up op-challenger.
     if not DEVNET_L2OO:
