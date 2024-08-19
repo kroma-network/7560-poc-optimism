@@ -7,6 +7,7 @@ import { CommonTest } from "test/setup/CommonTest.sol";
 contract NonceManagerTest is CommonTest {
     address constant aaEntryPoint = 0x0000000000000000000000000000000000007560;
     uint192 public aliceKey;
+    error InvalidLength();
 
     /// @dev Sets up the test suite.
     function setUp() public virtual override {
@@ -24,7 +25,7 @@ contract NonceManagerTest is CommonTest {
     }
 
     /// @dev Tests that increasing nonce with invalid nonce fails.
-    function test_validateIncrement_invalidNonce_fails() public {
+    function test_validateIncrement_invalidNonce_fails() external {
         vm.prank(aaEntryPoint);
         (bool success,) = address(nonceManager).call(abi.encodePacked(alice, aliceKey, uint64(1)));
         assertFalse(success);
@@ -41,5 +42,29 @@ contract NonceManagerTest is CommonTest {
         (success, returnData) = address(nonceManager).call(abi.encodePacked(alice, aliceKey));
         assertTrue(success);
         assertEq(returnData, abi.encodePacked(uint192(aliceKey), uint64(1)));
+    }
+
+    /// @dev Tests that getting nonce with invalid length fails.
+    function test_fallback_get_invalidLength_fails() external {
+        vm.expectRevert(InvalidLength.selector);
+        (bool success,) = address(nonceManager).call(abi.encodePacked(alice, aliceKey, uint64(1)));
+        (success); // silence unused variable warning
+    }
+
+    /// @dev Fuzz test for validateIncrement function.
+    function testFuzz_validateIncrement_succeeds(uint256 n) external {
+        bool success;
+        bytes memory returnData;
+
+        n = n % 1000; // limit the number of iterations to prevent OOG
+        for (uint256 i = 0; i < n; i++) {
+            vm.prank(aaEntryPoint);
+            (success,) = address(nonceManager).call(abi.encodePacked(alice, aliceKey, uint64(i)));
+            assertTrue(success);
+        }
+
+        (success, returnData) = address(nonceManager).call(abi.encodePacked(alice, aliceKey));
+        assertTrue(success);
+        assertEq(returnData, abi.encodePacked(uint192(aliceKey), uint64(n)));
     }
 }
