@@ -24,11 +24,12 @@ contract TestPaymaster {
         (version, txHash, transaction);
         context = new bytes(1);
         // limited to 48 bits
-        uint64 validUntil = type(uint64).max & 0xFFFFFFFFFFFF;
-        uint64 validAfter = 0;
-        validationData =
-            (bytes32(MAGIC_VALUE_PAYMASTER) |
-            bytes32(uint256(validUntil) << (6 * 8)) |
-            bytes32(uint256(validAfter)));
+        uint48 validUntil = 0;
+        uint48 validAfter = 0;
+        validationData = bytes32(
+            uint256(uint32(MAGIC_VALUE_PAYMASTER)) |
+            ((uint256(validUntil)) << 160) |
+            (uint256(validAfter) << (160 + 48))
+        );
     }
 }

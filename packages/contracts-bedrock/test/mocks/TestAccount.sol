@@ -19,12 +19,13 @@ contract TestAccount {
     {
         (version, txHash, transaction);
         // limited to 48 bits
-        uint64 validUntil = type(uint64).max & 0xFFFFFFFFFFFF;
-        uint64 validAfter = 0;
-        validationData =
-            (bytes32(MAGIC_VALUE_SENDER) |
-            bytes32(uint256(validUntil) << (6 * 8)) |
-            bytes32(uint256(validAfter)));
+        uint48 validUntil = 0;
+        uint48 validAfter = 0;
+        validationData = bytes32(
+            uint256(uint32(MAGIC_VALUE_SENDER)) |
+            ((uint256(validUntil)) << 160) |
+            (uint256(validAfter) << (160 + 48))
+        );
     }
 
     function execute(address dest, uint256 value, bytes calldata func) external {
