@@ -72,5 +72,7 @@
   "daChallengeWindow": 160,
   "daResolveWindow": 160,
   "daBondSize": 1000000,
-  "daResolverRefundPercentage": 0
+  "daResolverRefundPercentage": 0,
+  "rip7560block": "0x0",
+  "rip7712block": "0x0"
 }

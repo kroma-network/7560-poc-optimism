@@ -292,6 +292,12 @@ type DeployConfig struct {
 
 	// UseInterop is a flag that indicates if the system is using interop
 	UseInterop bool `json:"useInterop,omitempty"`
+
+	// RIP7560 HF block
+	RIP7560Block *hexutil.Big `json:"rip7560block,omitempty"`
+
+	// RIP7712 HF block
+	RIP7712Block *hexutil.Big `json:"rip7712block,omitempty"`
 }
 
 // Copy will deeply copy the DeployConfig. This does a JSON roundtrip to copy
